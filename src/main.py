@@ -10,9 +10,8 @@ import os
 if os.environ.get("TESTING") == "1":
     print("RUNNING IN TESTING MODE: MOCKING ACTIVATED")
     from src.mocks.firebase.database import db
-    from src.mocks.firebase.bucket import bucket
 else:
-    from src.firebase.access import db, bucket
+    from src.firebase.access import db
 
 app = FastAPI()
 
@@ -63,8 +62,9 @@ def get_all_users(_api_key: APIKey = Depends(get_api_key)):
 def get_user_by_id(user_name: str, _api_key: APIKey = Depends(get_api_key)):
     """Returns a user by its id or 404 if not found"""
     db_entry = db.collection("users").document(user_name).get()
+
     if not db_entry.exists:
-        raise HTTPException(status_code=404, detail="user not found")
+        raise HTTPException(status_code=404, detail="User not found")
 
     return db_entry.to_dict()
 
@@ -75,7 +75,7 @@ def post_user(user_name: str, _api_key: APIKey = Depends(get_api_key)):
     ref = db.collection("users").document(user_name)
     ref.set(User(songs=[], playlists=[]).dict())
 
-    return {"id": ref.id}
+    return {"user_name": ref.id}
 
 
 @app.delete("/api/v1/users/")
@@ -83,14 +83,13 @@ def delete_user(user_name: str, _api_key: APIKey = Depends(get_api_key)):
     """Deletes a user given its username or 404 if not found"""
     try:
         db.collection("users").document(user_name).delete()
-        blob = bucket.blob(user_name)
-        blob.delete()
     # TODO: catchear solo NotFound
     except Exception as entry_not_found:
         raise HTTPException(
             status_code=404, detail="User not found"
         ) from entry_not_found
-    return user_name
+
+    return {"user_name": user_name}
 
 
 @app.put("/api/v1/users/")
@@ -102,7 +101,7 @@ def update_user(
         user_update.info.dict(exclude_unset=True)
     )
 
-    return user_name
+    return {"user_name": user_name}
 
 
 @app.post("/api/v1/new_song/{song_id}")
@@ -115,7 +114,8 @@ def new_song(song_id: str, user_name: str, _api_key: APIKey = Depends(get_api_ke
     user = db_entry.to_dict()
     user["songs"].append(song_id)
     db.collection("users").document(user_name).update(user)
-    return user_name
+
+    return {"user_name": user_name}
 
 
 @app.delete("/api/v1/delete_song/{song_id}")
@@ -148,4 +148,4 @@ def delete_song(user_name: str, song_id: str, _api_key: APIKey = Depends(get_api
     db.collection("users").document(artist_name).update(user_dict)
     print("OK")
 
-    return song_id
+    return {"song_id": song_id}

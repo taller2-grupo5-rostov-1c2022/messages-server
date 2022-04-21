@@ -42,7 +42,11 @@ class CollectionMock:
         return self.documents[name]
 
     def stream(self):
-        return self.documents.values()
+        stream = []
+        for document in self.documents.values():
+            if document.exists:
+                stream.append(document)
+        return stream
 
 
 class DBMock:
