@@ -113,6 +113,17 @@ You'll need to set the following actions secrets:
 - `HEROKU_EMAIL`: Account email
 - `HEROKU_API_KEY`: Account [API key](https://dashboard.heroku.com/account)
 
+## Firebase
+
+To access the database and storage, you'll need to generate a Firebase private key.
+
+To do so, go to **Project configuration** > **Service accounts** > **Generate new private key**. [[Link](https://console.firebase.google.com/u/0/project/rostov-spotifiuby/settings/serviceaccounts/adminsdk)]
+
+Save the file as `google-credentials.json` in the root directory of the repository.
+
+You can also set `TESTING=1` as an environment variable to use mocks of the database
+and storage for testing purposes.
+
 ## Datadog
 
 The heroku Dockerfile includes the DataDog agent.  Create a new DataDog API Key from [here](https://app.datadoghq.com/organization-settings/api-keys).
