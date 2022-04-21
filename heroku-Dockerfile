@@ -35,8 +35,6 @@ RUN pip install poetry
 WORKDIR /code
 COPY poetry.lock pyproject.toml /code/
 
-ENTRYPOINT ["sh", "add-google-credentials.sh"]
-
 # install runtime deps
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction --no-ansi
@@ -46,5 +44,7 @@ RUN poetry install --no-interaction --no-ansi
 COPY ./src ./src/
 COPY ./heroku-entrypoint.sh ./heroku-entrypoint.sh
 RUN chmod +x ./heroku-entrypoint.sh
+
+ENTRYPOINT ["sh", "add-google-credentials.sh"]
 
 CMD ["./heroku-entrypoint.sh"]
