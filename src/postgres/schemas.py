@@ -21,7 +21,7 @@ class MessageInfo(BaseModel):
 
 
 class MessageBase(MessageInfo):
-    id: str
+    id: int
     created_at: datetime
 
     class Config:
