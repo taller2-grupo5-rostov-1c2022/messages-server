@@ -73,8 +73,6 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-      - name: Install requests
-        run: poetry run pip3 install requests
       #----------------------------------------------
       # install your root project, if required
       #----------------------------------------------
@@ -84,7 +82,11 @@ jobs:
       #    run test suite and output coverage file
       #----------------------------------------------
       - name: Test with pytest
-        run: poetry run pytest --cov=./ --cov-report=xml
+        run: ./scripts/coverage-container.sh
+      #----------------------------------------------
+      #    setup files
+      #----------------------------------------------
+      - run: sudo mv ./docker/cov/coverage.xml ./coverage.xml && sudo rm -rf ./docker
       #----------------------------------------------
       #             upload coverage stats
       # (requires CODECOV_TOKEN in repository secrets)
@@ -92,20 +94,34 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}  # Only required for private repositories
+          token: ${{ secrets.CODECOV_TOKEN }} # Only required for private repositories
           file: ./coverage.xml
           fail_ci_if_error: true
   deploy_container:
+    if: github.ref == 'refs/heads/master'
     needs: [linting, tests_and_coverage]
     runs-on: ubuntu-latest
+    environment:
+      name: Production
+      url: "https://rostov-song-server.herokuapp.com/docs"
     steps:
       - uses: actions/checkout@v2
-      - name: 'Copy and rename dockerfile' # workaround, consider using https://github.com/marketplace/actions/build-push-and-release-a-docker-container-to-heroku
+      - name: "Copy and rename dockerfile" # workaround
         run: |
-          mv heroku-Dockerfile Dockerfile
+          chmod +x ./scripts/cp-root.sh
+          ./scripts/cp-root.sh
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        env:
+          HD_API_KEY: ${{secrets.API_KEY}}
+          HD_POSTGRES_URL: ${{secrets.POSTGRES_URL}}
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
           heroku_email: ${{secrets.HEROKU_EMAIL}}
           usedocker: true
+          # healthcheck: "https://${{secrets.HEROKU_APP_NAME}}.herokuapp.com/"
+          # rollbackonhealthcheckfailed: true
+          # delay: 1.5
+          # healthcheck delay in seconds
+          # check might occur before the app is ready
+          # either wait for healthcheck or remove healthcheck
