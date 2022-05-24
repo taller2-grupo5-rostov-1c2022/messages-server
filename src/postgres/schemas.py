@@ -11,6 +11,13 @@ class UserBase(BaseModel):
         orm_mode = True
 
 
+class MessageText(BaseModel):
+    text: str
+
+    class Config:
+        orm_mode = True
+
+
 class MessageInfo(BaseModel):
     text: str
     sender: UserBase

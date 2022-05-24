@@ -2,38 +2,43 @@ from datetime import datetime
 from operator import and_
 from typing import List
 
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException, Header
 from sqlalchemy import or_
 
 from src.postgres import schemas, models
 from src.postgres.database import get_db
-from src.repositories import message_utils, user_utils
+from src.repositories import user_utils
 
 router = APIRouter(tags=["messages"])
 
 
 @router.post("/messages/", response_model=schemas.MessageBase)
 def post_message(
-    message_info: schemas.MessageInfo = Depends(message_utils.retrieve_message),
+    receiver_id: str,
+    message_text: schemas.MessageText,
     pdb=Depends(get_db),
+    uid: str = Header(...),
 ):
+    sender = user_utils.get_user(pdb, uid)
+    receiver = user_utils.get_user(pdb, receiver_id)
+
     message = models.MessageModel(
-        receiver_id=message_info.receiver.id,
-        sender_id=message_info.sender.id,
-        text=message_info.text,
+        receiver_id=receiver.id,
+        sender_id=sender.id,
+        text=message_text.text,
         read=False,
         created_at=datetime.now(),
     )
     pdb.add(message)
     pdb.commit()
-    print(message)
     return message
 
 
-@router.get("/messages/", response_model=List[schemas.MessageBase])
-def get_messages(user_id_1: str, user_id_2: str, pdb=Depends(get_db)):
-    user_1 = user_utils.retrieve_user(user_id_1, pdb)
-    user_2 = user_utils.retrieve_user(user_id_2, pdb)
+@router.get("/messages/{other_id}/", response_model=List[schemas.MessageBase])
+def get_messages(other_id: str, uid: str = Header(...), pdb=Depends(get_db)):
+
+    user_1 = user_utils.get_user(pdb, uid)
+    user_2 = user_utils.get_user(pdb, other_id)
 
     messages = (
         pdb.query(models.MessageModel)
@@ -57,10 +62,15 @@ def get_messages(user_id_1: str, user_id_2: str, pdb=Depends(get_db)):
 
 
 @router.delete("/messages/{message_id}/")
-def delete_message(message_id: int, pdb=Depends(get_db)):
+def delete_message(message_id: int, uid: str = Header(...), pdb=Depends(get_db)):
     message = pdb.get(models.MessageModel, message_id)
     if message is None:
         raise HTTPException(status_code=404, detail="Message not found")
+    if message.sender.id != uid:
+        raise HTTPException(
+            status_code=403, detail="Attempt to delete other user's message"
+        )
+
     pdb.delete(message)
     pdb.commit()
     return message
