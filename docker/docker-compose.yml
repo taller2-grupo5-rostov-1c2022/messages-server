@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  fastapi-server:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ../src:/code/src
+      - ../tests:/code/tests
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - PORT=${PORT}
+      - API_KEY=${API_KEY}
