@@ -1,20 +1,28 @@
 import firebase_admin
 import json
 from firebase_admin import credentials
-from firebase_admin import firestore
-from firebase_admin import storage
+from firebase_admin import auth
 
 from dotenv import load_dotenv
 
+from src.constants import TESTING
+from src.mocks.firebase.auth import auth_mock
+
 load_dotenv()
 
-# Use a service account
-with open("google-credentials.json") as json_file:
-    cert_dict = json.load(json_file, strict=False)
+_auth = auth_mock
 
-cred = credentials.Certificate(cert_dict)
+if TESTING is None:
+    # Use a service account
+    with open("google-credentials.json") as json_file:
+        cert_dict = json.load(json_file, strict=False)
 
-firebase_admin.initialize_app(cred, {"storageBucket": "rostov-spotifiuby.appspot.com/"})
+    cred = credentials.Certificate(cert_dict)
 
-db = firestore.client()
-bucket = storage.bucket("rostov-spotifiuby.appspot.com")
+    firebase_admin.initialize_app(cred)
+
+    _auth = auth
+
+
+def get_auth():
+    return _auth

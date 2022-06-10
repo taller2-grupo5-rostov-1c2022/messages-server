@@ -5,9 +5,10 @@ from typing import List
 from fastapi import Depends, APIRouter, HTTPException, Header
 from sqlalchemy import or_
 
+from src.firebase.access import get_auth
 from src.postgres import schemas, models
 from src.postgres.database import get_db
-from src.repositories import user_utils
+from src.repositories import user_utils, message_utils
 
 router = APIRouter(tags=["messages"])
 
@@ -18,6 +19,7 @@ def post_message(
     message_text: schemas.MessageText,
     pdb=Depends(get_db),
     uid: str = Header(...),
+    auth=Depends(get_auth)
 ):
     sender = user_utils.get_user(pdb, uid)
     receiver = user_utils.get_user(pdb, receiver_id)
@@ -31,6 +33,9 @@ def post_message(
     )
     pdb.add(message)
     pdb.commit()
+
+    message_utils.send_notification(sender, receiver, message_text.text, auth)
+
     return message
 
 

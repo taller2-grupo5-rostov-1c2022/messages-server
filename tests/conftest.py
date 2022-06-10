@@ -1,15 +1,42 @@
 import time
 
 import pytest
+from fastapi import HTTPException, status
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.main import app
+from src.main import app, API_VERSION_PREFIX
 from src.postgres.database import get_db, Base
+import requests_mock
+import requests
 
 import os
 
+from src.repositories.message_utils import NOTIFICATIONS_ENDPOINT
+
 SQLALCHEMY_DATABASE_URL = os.environ.get("TEST_POSTGRES_URL")
+
+
+def api_matcher(request):
+    if API_VERSION_PREFIX not in request.url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Attepmted to call non-api endpoint",
+        )
+    return None
+
+
+@pytest.fixture
+def custom_requests_mock():
+    m = requests_mock.Mocker(real_http=True)
+    m.start()
+    m.add_matcher(api_matcher)
+    m.post(NOTIFICATIONS_ENDPOINT, status_code=status.HTTP_200_OK)
+
+    try:
+        yield m
+    finally:
+        m.stop()
 
 
 @pytest.fixture(scope="session")

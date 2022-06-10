@@ -28,7 +28,6 @@ class UserModel(Base):
 
     id = Column(String, primary_key=True, index=True)
 
-    # define relationship between UserModel and MessageModel
     messages_sent = relationship(
         "MessageModel", foreign_keys=[MessageModel.sender_id], back_populates="sender"
     )
