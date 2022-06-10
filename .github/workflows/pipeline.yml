@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Production
-      url: "https://rostov-song-server.herokuapp.com/docs"
+      url: "https://rostov-messages-server.herokuapp.com/docs"
     steps:
       - uses: actions/checkout@v2
       - name: "Copy and rename dockerfile" # workaround
