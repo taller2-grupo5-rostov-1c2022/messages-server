@@ -114,6 +114,7 @@ jobs:
         env:
           HD_API_KEY: ${{secrets.API_KEY}}
           HD_POSTGRES_URL: ${{secrets.POSTGRES_URL}}
+          HD_NOTIFS_API_KEY: ${{secrets.NOTIFS_API_KEY}}
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}

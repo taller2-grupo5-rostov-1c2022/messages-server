@@ -7,7 +7,7 @@ from datetime import date, datetime
 
 load_dotenv()
 
-NOTIFICATIONS_ENDPOINT = "https://rostov-notifs-server.herokuapp.com/api/v1/messages"
+NOTIFICATIONS_ENDPOINT = "https://rostov-notifs-server.herokuapp.com/api/v1/messages/"
 NOTIFS_API_KEY = os.getenv("NOTIFS_API_KEY")
 
 
