@@ -13,11 +13,17 @@ def post_message(client, sender_id: str, receiver_id: str, text: str):
     return response
 
 
-def get_messages(client, uid: str, other_id: str):
-    response = client.get(
-        f"{API_VERSION_PREFIX}/messages/{other_id}/",
-        headers={"api_key": "key", "uid": uid},
-    )
+def get_messages(client, uid: str, other_id: str, id_start: Optional[int] = None):
+    if id_start is None:
+        response = client.get(
+            f"{API_VERSION_PREFIX}/messages/{other_id}/",
+            headers={"api_key": "key", "uid": uid},
+        )
+    else:
+        response = client.get(
+            f"{API_VERSION_PREFIX}/messages/{other_id}/?id_start={id_start}",
+            headers={"api_key": "key", "uid": uid},
+        )
     return response
 
 

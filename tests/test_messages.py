@@ -18,7 +18,9 @@ def test_get_messages_with_zero_messages(client, custom_requests_mock):
     assert response.json() == []
 
 
-def test_get_messages_creates_user_with_id_uid_if_not_exists(client, custom_requests_mock):
+def test_get_messages_creates_user_with_id_uid_if_not_exists(
+    client, custom_requests_mock
+):
     utils.post_message(client, "sergio", "guido", "hola soy sergio [REDACTED]")
 
     response = utils.get_messages(client, "does_not_exist", "guido")
@@ -28,7 +30,9 @@ def test_get_messages_creates_user_with_id_uid_if_not_exists(client, custom_requ
     assert len(messages) == 0
 
 
-def test_get_messages_creates_user_with_id_other_if_not_exists(client, custom_requests_mock):
+def test_get_messages_creates_user_with_id_other_if_not_exists(
+    client, custom_requests_mock
+):
     utils.post_message(client, "sergio", "guido", "hola soy sergio [REDACTED]")
 
     response = utils.get_messages(client, "sergio", "does_not_exist")
@@ -69,7 +73,9 @@ def test_get_messages_with_many_messages(client, custom_requests_mock):
     assert messages[2]["text"] == "eso es detalle de [REDACTED]"
 
 
-def test_get_messages_only_returns_messages_from_conversation(client, custom_requests_mock):
+def test_get_messages_only_returns_messages_from_conversation(
+    client, custom_requests_mock
+):
     utils.post_message(client, "sergio", "guido", "hola soy sergio [REDACTED]")
     utils.post_message(client, "sergio", "tomas", "punto extra para [REDACTED]")
 
@@ -121,7 +127,9 @@ def test_random_user_cannot_delete_message_from_sender(client, custom_requests_m
     assert response.status_code == 403
 
 
-def test_post_message_posts_message_even_if_notification_fails(client, custom_requests_mock):
+def test_post_message_posts_message_even_if_notification_fails(
+    client, custom_requests_mock
+):
     custom_requests_mock.post(NOTIFICATIONS_ENDPOINT, status_code=500)
     response = utils.post_message(
         client, "sergio", "guido", "hola soy sergio [REDACTED]"
@@ -134,3 +142,17 @@ def test_post_message_posts_message_even_if_notification_fails(client, custom_re
     assert response.status_code == 200
     assert len(messages) == 1
     assert messages[0]["text"] == "hola soy sergio [REDACTED]"
+
+
+def test_get_messages_with_id_start(client, custom_requests_mock):
+    utils.post_message(client, "sergio", "guido", "hola soy sergio [REDACTED]")
+    utils.post_message(client, "sergio", "guido", "falta la [REDACTED]")
+    utils.post_message(client, "sergio", "guido", "eso es detalle de [REDACTED]")
+
+    response = utils.get_messages(client, "sergio", "guido", id_start=2)
+    messages = response.json()
+
+    assert response.status_code == 200
+    assert len(messages) == 2
+    assert messages[0]["text"] == "falta la [REDACTED]"
+    assert messages[1]["text"] == "eso es detalle de [REDACTED]"

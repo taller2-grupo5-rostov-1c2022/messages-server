@@ -1,8 +1,8 @@
 from datetime import datetime
 from operator import and_
-from typing import List
+from typing import List, Optional
 
-from fastapi import Depends, APIRouter, HTTPException, Header
+from fastapi import Depends, APIRouter, HTTPException, Header, Query
 from sqlalchemy import or_
 
 from src.firebase.access import get_auth
@@ -19,7 +19,7 @@ def post_message(
     message_text: schemas.MessageText,
     pdb=Depends(get_db),
     uid: str = Header(...),
-    auth=Depends(get_auth)
+    auth=Depends(get_auth),
 ):
     sender = user_utils.get_user(pdb, uid)
     receiver = user_utils.get_user(pdb, receiver_id)
@@ -40,12 +40,17 @@ def post_message(
 
 
 @router.get("/messages/{other_id}/", response_model=List[schemas.MessageBase])
-def get_messages(other_id: str, uid: str = Header(...), pdb=Depends(get_db)):
+def get_messages(
+    other_id: str,
+    uid: str = Header(...),
+    pdb=Depends(get_db),
+    id_start: Optional[int] = Query(None),
+):
 
     user_1 = user_utils.get_user(pdb, uid)
     user_2 = user_utils.get_user(pdb, other_id)
 
-    messages = (
+    query = (
         pdb.query(models.MessageModel)
         .filter(
             or_(
@@ -60,8 +65,11 @@ def get_messages(other_id: str, uid: str = Header(...), pdb=Depends(get_db)):
             )
         )
         .order_by(models.MessageModel.created_at)
-        .all()
     )
+    if id_start is not None:
+        query = query.filter(models.MessageModel.id >= id_start)
+
+    messages = query.all()
 
     return messages
 

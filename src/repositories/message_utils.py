@@ -9,7 +9,9 @@ def get_display_name(uid: str, auth):
     return auth.get_user(uid)["display_name"]
 
 
-def send_notification(sender: models.UserModel, receiver: models.UserModel, message_text: str, auth):
+def send_notification(
+    sender: models.UserModel, receiver: models.UserModel, message_text: str, auth
+):
 
     sender_name = get_display_name(sender.id, auth)
     notif_title = f"{sender_name} sent you a message"
