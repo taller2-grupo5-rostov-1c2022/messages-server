@@ -34,7 +34,9 @@ def post_message(
     pdb.add(message)
     pdb.commit()
 
-    message_utils.send_notification(sender, receiver, message_text.text, auth)
+    message_utils.send_notification(
+        sender, receiver, schemas.MessageBase.from_orm(message), auth
+    )
 
     return message
 

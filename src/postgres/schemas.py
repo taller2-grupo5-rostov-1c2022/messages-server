@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from pydantic.main import BaseModel
-from typing import Optional, List
 
 
 class UserBase(BaseModel):

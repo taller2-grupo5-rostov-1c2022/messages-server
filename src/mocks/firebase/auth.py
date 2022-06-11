@@ -16,9 +16,18 @@ class Auth:
 
     def get_user(self, uid):
         try:
-            return self.user[uid]
+            return UserMock(self.user["uid"], self.user["display_name"])
         except KeyError:
-            return {"display_name": "default_display_name"}
+            return UserMock(uid, "default_display_name")
+
+
+class UserMock:
+    def __init__(self, uid, display_name):
+        self.uid = uid
+        self._display_name = display_name
+
+    def display_name(self):
+        return self._display_name
 
 
 auth_mock = Auth()
