@@ -109,6 +109,7 @@ jobs:
           HD_MONGO_URL: ${{secrets.DEV_MONGO_URL}}
           AGORA_APP_ID: ${{secrets.AGORA_APP_ID}}
           AGORA_APP_CERT: ${{secrets.AGORA_APP_CERT}}
+          HD_NOTIFS_API_KEY: ${{secrets.NOTIFS_API_KEY}}
         with:
           heroku_api_key: ${{secrets.DEV_HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.DEV_HEROKU_APP_NAME}}
