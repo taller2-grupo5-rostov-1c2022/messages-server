@@ -30,6 +30,8 @@ async def post_message(
     db=Depends(get_db),
     auth=Depends(get_auth),
 ):
+    if uid == receiver_id:
+        raise HTTPException(status_code=403, detail="You cannot send a message to yourself")
 
     messages = db.get_collection("messages")
 
@@ -72,6 +74,9 @@ async def get_messages(
     start_id: Optional[int] = Query(None),
     db=Depends(get_db),
 ):
+    if uid == other_id:
+        raise HTTPException(status_code=403, detail="You can't talk to yourself")
+
     messages = db.get_collection("messages")
 
     chat_doc = await messages.find_one({"users": {"$all": [uid, other_id]}})

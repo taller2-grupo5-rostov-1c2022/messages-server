@@ -54,11 +54,24 @@ async def test_get_messages_with_one_message(client, custom_requests_mock):
 
     assert response.status_code == 200
     assert len(messages) == 1
-    print(messages[0])
     assert messages[0]["id"] == message_id
     assert messages[0]["text"] == "hola soy sergio [REDACTED]"
     assert messages[0]["sender"]["id"] == "sergio"
     assert messages[0]["receiver"]["id"] == "guido"
+
+
+async def test_get_messages_with_equal_sender_and_receiver_should_fail(
+    client, custom_requests_mock
+):
+    response = utils.get_messages(client, "sergio", "sergio")
+    assert response.status_code == 403
+
+
+async def test_post_message_with_equal_sender_and_receiver_should_fail(
+    client, custom_requests_mock
+):
+    response = utils.post_message(client, "sergio", "sergio", "hola soy sergio [REDACTED]")
+    assert response.status_code == 403
 
 
 async def test_get_messages_with_many_messages(client, custom_requests_mock):
@@ -164,3 +177,5 @@ async def test_get_messages_with_id_start(client, custom_requests_mock):
     assert len(messages) == 2
     assert messages[0]["text"] == "falta la [REDACTED]"
     assert messages[1]["text"] == "eso es detalle de [REDACTED]"
+
+
