@@ -1,13 +1,10 @@
 import pytz
 from datetime import datetime
 from typing import List, Optional
-import nest_asyncio
-from bson.errors import InvalidId
 from fastapi import Depends, APIRouter, HTTPException, Header, Query
 
 from src.firebase.access import get_auth
 from src.mongo import schemas
-from bson.objectid import ObjectId
 
 from src.mongo.database import get_db
 from src.repositories import message_utils
@@ -63,6 +60,8 @@ async def post_message(
     message_dict = message.dict()
     message_dict["id"] = message_id
 
+    message_utils.send_notification(uid, receiver_id, message_dict, auth)
+
     return schemas.MessageGet.from_orm(message_dict)
 
 
@@ -79,14 +78,9 @@ async def get_messages(
     if date_start:
         queries["created_at"] = {"$gte": date_start}
 
-    # get messages from the collections, such that uid and other_id are in the
-    # 'users' field
     chat_doc = await messages.find_one({"users": {"$all": [uid, other_id]}})
-    # if there are no messages between the two users, return an empty list
     if chat_doc is None:
         return []
-    # if there are messages between the two users, return the messages after the
-    # date_start
     else:
         messages_between_users = chat_doc["user_msgs"]
         messages_list_with_id = []
@@ -100,17 +94,7 @@ async def get_messages(
                 msg for msg in messages_between_users if msg["created_at"] >= date_start
             ]
 
-        print(messages_between_users)
         return [schemas.MessageGet.from_orm(msg) for msg in messages_between_users]
-
-
-"""
-    messages_list = await messages.find(queries).to_list(None)
-
-    messages_list = [schemas.MessageGet.from_orm(message) for message in messages_list]
-
-    return messages_list
-"""
 
 
 @router.delete("/messages/{message_id}/")

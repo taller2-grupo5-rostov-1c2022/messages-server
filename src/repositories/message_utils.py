@@ -26,14 +26,14 @@ def get_display_name(uid: str, auth):
 def send_notification(
     sender_id: str,
     receiver_id: str,
-    message: schemas.MessageBase,
+    message: dict,
     auth,
 ):
 
     sender_name = get_display_name(sender_id, auth)
     notif_title = f"{sender_name} sent you a message"
-    notif_body = message.text
-    notif_extra = json.dumps(message.dict(), default=json_serial)
+    notif_body = message["text"]
+    notif_extra = json.dumps(message, default=json_serial)
 
     requests.post(
         NOTIFICATIONS_ENDPOINT,
