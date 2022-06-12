@@ -69,32 +69,26 @@ async def post_message(
 async def get_messages(
     other_id: str,
     uid: str = Header(...),
-    date_start: Optional[datetime] = Query(None),
+    start_id: Optional[int] = Query(None),
     db=Depends(get_db),
 ):
     messages = db.get_collection("messages")
 
-    queries = {}
-    if date_start:
-        queries["created_at"] = {"$gte": date_start}
-
     chat_doc = await messages.find_one({"users": {"$all": [uid, other_id]}})
     if chat_doc is None:
         return []
-    else:
-        messages_between_users = chat_doc["user_msgs"]
-        messages_list_with_id = []
-        for i, message in enumerate(messages_between_users):
-            message["id"] = i
-            messages_list_with_id.append(message)
 
-        messages_between_users = messages_list_with_id
-        if date_start:
-            messages_between_users = [
-                msg for msg in messages_between_users if msg["created_at"] >= date_start
-            ]
+    messages_between_users = chat_doc["user_msgs"]
+    messages_list_with_id = []
+    for i, message in enumerate(messages_between_users):
+        message["id"] = i
+        messages_list_with_id.append(message)
 
-        return [schemas.MessageGet.from_orm(msg) for msg in messages_between_users]
+    messages_between_users = messages_list_with_id
+    if start_id:
+        messages_between_users = messages_between_users[start_id:]
+
+    return [schemas.MessageGet.from_orm(msg) for msg in messages_between_users]
 
 
 @router.delete("/messages/{message_id}/")

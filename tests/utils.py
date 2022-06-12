@@ -15,16 +15,16 @@ def post_message(client, sender_id: str, receiver_id: str, text: str):
 
 
 def get_messages(
-    client, uid: str, other_id: str, date_start: Optional[datetime] = None
+    client, uid: str, other_id: str, start_id: Optional[int] = None
 ):
-    if date_start is None:
+    if start_id is None:
         response = client.get(
             f"{API_VERSION_PREFIX}/messages/{other_id}/",
             headers={"api_key": "key", "uid": uid},
         )
     else:
         response = client.get(
-            f"{API_VERSION_PREFIX}/messages/{other_id}/?date_start={date_start}",
+            f"{API_VERSION_PREFIX}/messages/{other_id}/?start_id={start_id}",
             headers={"api_key": "key", "uid": uid},
         )
     return response
