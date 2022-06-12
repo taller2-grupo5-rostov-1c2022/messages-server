@@ -1,19 +1,13 @@
 version: "3.9"
 services:
-  postgres:
-    image: postgres:13
+  mongo:
+    image: mongo
     restart: always
-    environment:
-      - POSTGRES_USER=test
-      - POSTGRES_PASSWORD=test
-    logging:
-      options:
-        max-size: 10m
-        max-file: "3"
     ports:
-      - "5438:5432"
-    volumes:
-      - ./mongo-data:/var/lib/postgresql/data
+      - "27017:27017"
+    command:
+      - '--logpath'
+      - '/dev/null'
   fastapi-server:
     build:
       context: ../
@@ -23,10 +17,10 @@ services:
     volumes:
       - ./cov:/code/cov/
     depends_on:
-      - postgres
+      - mongo
     environment:
       - PORT=${PORT}
       - API_KEY=${API_KEY}
       - TESTING=1
-      - MONGO_URL=postgresql://mongo:27017/
-      - TEST_MONGO_URL=postgresql://@mongo:27017/
+      - MONGO_URL=mongodb://mongo:27017
+      - TEST_MONGO_URL=mongodb://mongo:27017
