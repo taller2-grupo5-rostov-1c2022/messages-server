@@ -1,4 +1,4 @@
-from src.postgres import models, schemas
+from src.mongo import schemas
 import requests
 import os
 from dotenv import load_dotenv
@@ -24,13 +24,13 @@ def get_display_name(uid: str, auth):
 
 
 def send_notification(
-    sender: models.UserModel,
-    receiver: models.UserModel,
+    sender_id: str,
+    receiver_id: str,
     message: schemas.MessageBase,
     auth,
 ):
 
-    sender_name = get_display_name(sender.id, auth)
+    sender_name = get_display_name(sender_id, auth)
     notif_title = f"{sender_name} sent you a message"
     notif_body = message.text
     notif_extra = json.dumps(message.dict(), default=json_serial)
@@ -38,8 +38,8 @@ def send_notification(
     requests.post(
         NOTIFICATIONS_ENDPOINT,
         headers={
-            "uid": sender.id,
-            "target-uid": receiver.id,
+            "uid": sender_id,
+            "target-uid": receiver_id,
             "api_key": NOTIFS_API_KEY,
         },
         json={"title": notif_title, "body": notif_body, "extra": notif_extra},

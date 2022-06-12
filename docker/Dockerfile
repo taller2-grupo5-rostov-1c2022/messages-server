@@ -19,6 +19,7 @@ RUN poetry install --no-interaction --no-ansi
 COPY ./src ./src/
 COPY ./tests ./tests/
 COPY ./scripts/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY ./pytest.ini ./pytest.ini
 
 RUN chmod +x ./docker-entrypoint.sh
 

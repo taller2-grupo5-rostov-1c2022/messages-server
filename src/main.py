@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from requests.auth import HTTPBasicAuth
 import os
 
-from src.app import messages, users
+from src.app import messages
 
 API_VERSION_PREFIX = "/api/v1"
 
@@ -42,11 +42,4 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-def healthcheck():
-    """Endpoint Healthcheck"""
-    return "ok"
-
-
-app.include_router(users.router, prefix=API_VERSION_PREFIX)
 app.include_router(messages.router, prefix=API_VERSION_PREFIX)

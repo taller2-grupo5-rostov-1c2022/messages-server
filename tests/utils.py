@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 import json
 
@@ -13,23 +14,25 @@ def post_message(client, sender_id: str, receiver_id: str, text: str):
     return response
 
 
-def get_messages(client, uid: str, other_id: str, id_start: Optional[int] = None):
-    if id_start is None:
+def get_messages(
+    client, uid: str, other_id: str, date_start: Optional[datetime] = None
+):
+    if date_start is None:
         response = client.get(
             f"{API_VERSION_PREFIX}/messages/{other_id}/",
             headers={"api_key": "key", "uid": uid},
         )
     else:
         response = client.get(
-            f"{API_VERSION_PREFIX}/messages/{other_id}/?id_start={id_start}",
+            f"{API_VERSION_PREFIX}/messages/{other_id}/?date_start={date_start}",
             headers={"api_key": "key", "uid": uid},
         )
     return response
 
 
-def delete_message(client, uid: str, message_id: int):
+def delete_message(client, uid: str, receiver_id: str, message_id: str):
     response = client.delete(
-        f"{API_VERSION_PREFIX}/messages/{message_id}/",
+        f"{API_VERSION_PREFIX}/messages/{message_id}/?receiver_id={receiver_id}",
         headers={"api_key": "key", "uid": uid},
     )
     return response
