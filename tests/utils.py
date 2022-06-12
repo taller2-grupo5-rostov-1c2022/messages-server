@@ -14,9 +14,7 @@ def post_message(client, sender_id: str, receiver_id: str, text: str):
     return response
 
 
-def get_messages(
-    client, uid: str, other_id: str, start_id: Optional[int] = None
-):
+def get_messages(client, uid: str, other_id: str, start_id: Optional[int] = None):
     if start_id is None:
         response = client.get(
             f"{API_VERSION_PREFIX}/messages/{other_id}/",

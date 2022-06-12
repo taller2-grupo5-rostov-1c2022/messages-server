@@ -31,7 +31,9 @@ async def post_message(
     auth=Depends(get_auth),
 ):
     if uid == receiver_id:
-        raise HTTPException(status_code=403, detail="You cannot send a message to yourself")
+        raise HTTPException(
+            status_code=403, detail="You cannot send a message to yourself"
+        )
 
     messages = db.get_collection("messages")
 

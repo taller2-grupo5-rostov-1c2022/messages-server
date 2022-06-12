@@ -70,7 +70,9 @@ async def test_get_messages_with_equal_sender_and_receiver_should_fail(
 async def test_post_message_with_equal_sender_and_receiver_should_fail(
     client, custom_requests_mock
 ):
-    response = utils.post_message(client, "sergio", "sergio", "hola soy sergio [REDACTED]")
+    response = utils.post_message(
+        client, "sergio", "sergio", "hola soy sergio [REDACTED]"
+    )
     assert response.status_code == 403
 
 
@@ -167,15 +169,17 @@ async def test_post_message_posts_message_even_if_notification_fails(
 
 async def test_get_messages_with_id_start(client, custom_requests_mock):
     utils.post_message(client, "sergio", "guido", "hola soy sergio [REDACTED]")
-    second_message = utils.post_message(client, "sergio", "guido", "falta la [REDACTED]").json()
+    second_message = utils.post_message(
+        client, "sergio", "guido", "falta la [REDACTED]"
+    ).json()
     utils.post_message(client, "sergio", "guido", "eso es detalle de [REDACTED]")
 
-    response = utils.get_messages(client, "sergio", "guido", start_id=second_message["id"])
+    response = utils.get_messages(
+        client, "sergio", "guido", start_id=second_message["id"]
+    )
     messages = response.json()
 
     assert response.status_code == 200
     assert len(messages) == 2
     assert messages[0]["text"] == "falta la [REDACTED]"
     assert messages[1]["text"] == "eso es detalle de [REDACTED]"
-
-
