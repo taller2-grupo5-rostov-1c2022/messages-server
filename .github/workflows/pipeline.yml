@@ -113,7 +113,7 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         env:
           HD_API_KEY: ${{secrets.API_KEY}}
-          HD_POSTGRES_URL: ${{secrets.POSTGRES_URL}}
+          HD_MONGO_URL: ${{secrets.MONGO_URL}}
           HD_NOTIFS_API_KEY: ${{secrets.NOTIFS_API_KEY}}
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
