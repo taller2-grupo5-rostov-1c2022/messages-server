@@ -87,10 +87,6 @@ jobs:
       #    setup files
       #----------------------------------------------
       - run: sudo mv ./docker/cov/coverage.xml ./coverage.xml && sudo rm -rf ./docker
-      #----------------------------------------------
-      #             upload coverage stats
-      # (requires CODECOV_TOKEN in repository secrets)
-      #----------------------------------------------
   deploy_container:
     needs: [linting, tests_and_coverage]
     runs-on: ubuntu-latest
