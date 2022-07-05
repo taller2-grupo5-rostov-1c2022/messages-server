@@ -1,4 +1,4 @@
-[![Pipeline](https://github.com/taller2-grupo5-rostov-1c2022/users-server/actions/workflows/pipeline.yml/badge.svg)](https://github.com/taller2-grupo5-rostov-1c2022/users-server/actions/workflows/pipeline.yml)
+[![Pipeline](https://github.com/taller2-grupo5-rostov-1c2022/messages-server/actions/workflows/pipeline.yml/badge.svg?branch=master)](https://github.com/taller2-grupo5-rostov-1c2022/messages-server/actions/workflows/pipeline.yml)
 [![codecov](https://codecov.io/gh/taller2-grupo5-rostov-1c2022/messages-server/branch/master/graph/badge.svg?token=mUN5qQzBYJ)](https://codecov.io/gh/taller2-grupo5-rostov-1c2022/messages-server)
 [![](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/)
 [![](https://img.shields.io/badge/docs-fastapi-blue.svg)](https://fastapi.tiangolo.com/)
