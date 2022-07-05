@@ -4,7 +4,7 @@
 [![](https://img.shields.io/badge/docs-fastapi-blue.svg)](https://fastapi.tiangolo.com/)
 
 
-# Spotifiuby Users Server
+# Spotifiuby Messages Server
 
 
 ## Installing the project
