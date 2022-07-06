@@ -113,6 +113,12 @@ You'll need to set the following actions secrets:
 - `HEROKU_EMAIL`: Account email
 - `HEROKU_API_KEY`: Account [API key](https://dashboard.heroku.com/account)
 
+
+## MongoDB
+
+This server uses [MongoDB](https://www.mongodb.com/) as its database.
+Set `MONGO_URL` as an environment variable and action secret to connect to the database.
+
 ## Firebase
 
 To access the database and storage, you'll need to generate a Firebase private key.
@@ -123,6 +129,8 @@ Save the file as `google-credentials.json` in the root directory of the reposito
 
 You can also set `TESTING=1` as an environment variable to use mocks of the database
 and storage for testing purposes.
+
+In order to load the credentials in Heroku, set `GOOGLE_CREDENTIALS` as an environment variable in Heroku, and paste the content of the `google-credentials.json` file.
 
 ## Datadog
 
