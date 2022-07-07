@@ -2,4 +2,3 @@ ignore:
   - "src/mocks"
   - "src/firebase"
   - "src/mongo"
-  - "src/"
